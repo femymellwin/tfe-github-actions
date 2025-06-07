@@ -1,7 +1,3 @@
-provider "aws" {
-  region = "us-east-1"
-}
-
 resource "aws_s3_bucket" "tf_state_bucket" {
   bucket = "my-terraform-state-bucket-12345"  # Make this globally unique
   acl    = "private"
