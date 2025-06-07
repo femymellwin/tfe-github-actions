@@ -1,4 +1,4 @@
-# 🏷️ Workflow name shown in the GitHub UI
+# 🏷️ Workflow name
 name: Terraform CI/CD
 
 # ⚡ Trigger on push or PR to main
@@ -7,7 +7,7 @@ on:
     branches: [ main ]
   pull_request:
     branches: [ main ]
-  workflow_dispatch:        # Allow manual trigger
+  workflow_dispatch:
 
 jobs:
   terraform:
@@ -21,7 +21,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: terrraform   # ✅ Applies to all `run:` commands
+        working-directory: terrraform   # adjust if your Terraform folder is different
 
     steps:
       - name: Checkout code
@@ -59,14 +59,14 @@ jobs:
             --format=json \
             --out-file=/tmp/infracost.json
 
-      - name: Post Infracost comment
+      - name: Post Infracost PR comment
         if: github.event_name == 'pull_request'
-        uses: infracost/actions-comment@v2
+        uses: infracost/actions/comment@v2
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           path: /tmp/infracost.json
 
-      - name: Terraform Plan (for human view)
+      - name: Terraform Plan (for humans)
         run: terraform plan
 
       - name: Terraform Apply
