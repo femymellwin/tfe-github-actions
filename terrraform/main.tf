@@ -9,4 +9,5 @@ resource "aws_instance" "test_vm" {
   tags = {
     Name = "GitHub-Actions-VM1"
   }
+
 }
