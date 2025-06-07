@@ -1,0 +1,44 @@
+# 🏷️ Workflow name shown in the GitHub UI
+name: Terraform CI/CD
+
+# ⚡ Trigger on push or PR to main
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:        # Allow manual trigger
+
+# 👷 Define the job
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+
+    # 🌍 Set common environment variables
+    env:
+      TF_INPUT: false                     # Disable interactive input
+      TF_IN_AUTOMATION: true             # Enable automation mode
+
+    steps:
+      # ✅ Step 1: Checkout repo code
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 🧰 Step 2: Setup Terraform CLI
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.6.6       # Set your desired version
+
+      # 📦 Step 3: Initialize Terraform
+      - name: Terraform Init
+        run: terraform init
+
+      # ✅ Step 4: Validate Terraform syntax
+      - name: Terraform Validate
+        run: terraform validate
+
+      # 📊 Step 5: Show Terraform Plan
+      - name: Terraform Plan
+        run: terraform plan
+
