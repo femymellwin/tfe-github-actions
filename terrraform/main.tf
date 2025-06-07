@@ -4,7 +4,7 @@ provider "aws" {
 
 terraform {
   backend "s3" {
-    bucket         = "your-s3-bucket-name"
+    bucket         = "fmshr-tfe-statefile-bucket"
     key            = "env/dev/terraform.tfstate"
     region         = "us-east-1"
     dynamodb_table = "terraform-lock-table"
