@@ -48,23 +48,7 @@ jobs:
       - name: Terraform Plan (JSON output)
         run: terraform plan -out=tfplan.binary && terraform show -json tfplan.binary > tfplan.json
 
-      - name: Setup Infracost
-        uses: infracost/actions/setup@v2
 
-      - name: Infracost breakdown
-        run: |
-          infracost breakdown \
-            --path=. \
-            --terraform-plan-json=tfplan.json \
-            --format=json \
-            --out-file=/tmp/infracost.json
-
-      - name: Post Infracost PR comment
-        if: github.event_name == 'pull_request'
-        uses: infracost/actions/comment@v2
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          path: /tmp/infracost.json
 
       - name: Terraform Plan (for humans)
         run: terraform plan
