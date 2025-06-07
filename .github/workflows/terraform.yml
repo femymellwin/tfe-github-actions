@@ -48,6 +48,21 @@ jobs:
         run: terraform validate
         working-directory: terrraform
 
+      - name: Setup Infracost
+        run: |
+          curl -sL https://infracost.io/downloads/v0.10/infracost-linux-amd64.tar.gz | tar xz
+          sudo mv infracost /usr/local/bin/
+
+      - name: Generate Infracost Cost Estimate
+        run: |
+          infracost breakdown --path=. \
+            --terraform-plan-json tfplan \
+            --format github-comment \
+            --show-skipped \
+            --out-file infracost-comment.json
+
+
+
       # 📊 Step 5: Show Terraform Plan
       - name: Terraform Plan
         run: terraform plan
