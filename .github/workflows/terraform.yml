@@ -41,5 +41,5 @@ jobs:
       # 📊 Step 5: Show Terraform Plan
       - name: Terraform Plan
         run: terraform plan
-        working-directory: terraform
+        working-directory: terrraform
 
