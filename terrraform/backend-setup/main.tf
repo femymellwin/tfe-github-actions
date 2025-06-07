@@ -4,7 +4,7 @@ provider "aws" {
 
 # Create S3 bucket for state
 resource "aws_s3_bucket" "terraform_state" {
-  bucket = "my-terraform-state-bucket-1234567890"  # Change to a globally unique name
+  bucket = "fmshr-tfe-statefile-bucket"  # Change to a globally unique name
 
   tags = {
     Name = "Terraform State Bucket"
