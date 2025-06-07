@@ -10,7 +10,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: terraform/backend-setup
+        working-directory: terrraform/backend-setup
 
     steps:
       - name: Checkout repository
