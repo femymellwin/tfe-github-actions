@@ -7,6 +7,6 @@ resource "aws_instance" "test_vm" {
   instance_type = var.instance_type
 
   tags = {
-    Name = "GitHub-Actions-VM"
+    Name = "GitHub-Actions-VM1"
   }
 }
