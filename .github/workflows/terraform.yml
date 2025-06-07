@@ -1,30 +1,21 @@
-# 🏷️ Workflow name shown in the GitHub UI
-name: Terraform CI/CD
-
-# ⚡ Trigger on push or PR to main
-on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
-  workflow_dispatch:        # Allow manual trigger
-
-# 👷 Define the job
 jobs:
   terraform:
     runs-on: ubuntu-latest
 
-    # 🌍 Set common environment variables
     env:
-      TF_INPUT: false                     # Disable interactive input
-      TF_IN_AUTOMATION: true             # Enable automation mode
+      TF_INPUT: false
+      TF_IN_AUTOMATION: true
+      AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION }}
+      INFRACOST_API_KEY: ${{ secrets.INFRACOST_API_KEY }}
+
+    defaults:
+      run:
+        working-directory: terrraform   # ✅ Applies to all `run:` commands
 
     steps:
-      # ✅ Step 1: Checkout repo code
       - name: Checkout code
         uses: actions/checkout@v4
-      
-      # ✅ Step 1.1:Configure AWS credentials
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v3
         with:
@@ -32,44 +23,39 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      # 🧰 Step 2: Setup Terraform CLI
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
-          terraform_version: 1.6.6       # Set your desired version
+          terraform_version: 1.6.6
 
-      # 📦 Step 3: Initialize Terraform
       - name: Terraform Init
         run: terraform init
-        working-directory: terrraform
 
-      # ✅ Step 4: Validate Terraform syntax
       - name: Terraform Validate
         run: terraform validate
-        working-directory: terrraform
+
+      - name: Terraform Plan (JSON output)
+        run: terraform plan -out=tfplan.binary && terraform show -json tfplan.binary > tfplan.json
 
       - name: Setup Infracost
+        uses: infracost/actions/setup@v2
+
+      - name: Infracost breakdown
         run: |
-          curl -sL https://infracost.io/downloads/v0.10/infracost-linux-amd64.tar.gz | tar xz
-          sudo mv infracost /usr/local/bin/
+          infracost breakdown \
+            --path=. \
+            --terraform-plan-json=tfplan.json \
+            --format=json \
+            --out-file=/tmp/infracost.json
 
-      - name: Generate Infracost Cost Estimate
-        run: |
-          infracost breakdown --path=. \
-            --terraform-plan-json tfplan \
-            --format github-comment \
-            --show-skipped \
-            --out-file infracost-comment.json
+      - name: Post Infracost comment
+        if: github.event_name == 'pull_request'
+        uses: infracost/actions/comment@v2
+        with:
+          path: /tmp/infracost.json
 
-
-
-      # 📊 Step 5: Show Terraform Plan
-      - name: Terraform Plan
+      - name: Terraform Plan (for human view)
         run: terraform plan
-        working-directory: terrraform
 
       - name: Terraform Apply
         run: terraform apply -auto-approve
-        working-directory: terrraform
-
-
