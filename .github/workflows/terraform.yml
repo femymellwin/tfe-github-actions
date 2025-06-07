@@ -1,3 +1,13 @@
+# 🏷️ Workflow name shown in the GitHub UI
+name: Terraform CI/CD
+
+# ⚡ Trigger on push or PR to main
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:        # Allow manual trigger
 jobs:
   terraform:
     runs-on: ubuntu-latest
