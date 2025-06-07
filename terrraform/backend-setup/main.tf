@@ -2,6 +2,17 @@ provider "aws" {
   region = "us-east-1"
 }
 
+terraform {
+  backend "s3" {
+    bucket         = "fmshr-tfe-statefile-bucket"
+    key            = "env/dev/terraform.tfstate"
+    region         = "us-east-1"
+    dynamodb_table = "terraform-lock-table"
+    encrypt        = true
+  }
+}
+
+
 # Create S3 bucket for state
 resource "aws_s3_bucket" "terraform_state" {
   bucket = "fmshr-tfe-statefile-bucket"  # Change to a globally unique name
